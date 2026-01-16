@@ -8,3 +8,5 @@ venv/
 env/
 .env
 results/*.csv
+local_model/artifacts/
+local_model/results.csv

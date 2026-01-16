@@ -3,9 +3,11 @@ import csv
 import json
 import os
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, Iterable, List
 
 from baselines import prompted_baseline, rules_baseline
+from local_model import evaluate as local_evaluate
+from local_model import train as local_train
 from eval.metrics import precision_recall_fnr
 
 
@@ -131,9 +133,38 @@ def main() -> None:
     ft_metrics = evaluate_predictions(labels, ft_preds)
     results.append({"model": f"fine_tuned:{ft_model}", **ft_metrics})
 
+    local_model_dir = Path("local_model/artifacts")
+    if not local_model_dir.exists():
+        local_train.train_model(
+            train_path="data/train.jsonl",
+            model_dir=str(local_model_dir),
+            epochs=8,
+            batch_size=16,
+            lr=1e-3,
+            max_features=5000,
+            hidden_dims=[128, 64],
+            seed=42,
+        )
+    local_metrics = local_evaluate.evaluate_model(
+        eval_path="data/eval.jsonl",
+        model_dir=str(local_model_dir),
+        out_csv="local_model/results.csv",
+    )
+    local_row = {
+        "model": "local_mlp",
+        "precision": local_metrics["precision"],
+        "recall": local_metrics["recall"],
+        "false_negative_rate": local_metrics["false_negative_rate"],
+        "tp": local_metrics["tp"],
+        "fp": local_metrics["fp"],
+        "tn": local_metrics["tn"],
+        "fn": local_metrics["fn"],
+        "total": local_metrics["total"],
+    }
+    results.append(local_row)
+
     write_results(Path(args.out), results)
 
 
 if __name__ == "__main__":
     main()
-
