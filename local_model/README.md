@@ -4,6 +4,6 @@ This is a CPU-only neural network baseline that runs offline. It provides a poin
 
 ## Run
 ```powershell
-python local_model/train.py
-python local_model/evaluate.py
+python -m local_model.train
+python -m local_model.evaluate
 ```

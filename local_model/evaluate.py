@@ -2,11 +2,16 @@ import argparse
 import csv
 import json
 import pickle
+import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
 
 import numpy as np
 import torch
+
+_ROOT = Path(__file__).resolve().parents[1]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from local_model.dataset import load_dataset
 from local_model.model import MLPClassifier

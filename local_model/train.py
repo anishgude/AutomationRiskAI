@@ -2,6 +2,7 @@ import argparse
 import json
 import pickle
 import random
+import sys
 from pathlib import Path
 from typing import Tuple
 
@@ -10,6 +11,10 @@ import torch
 from sklearn.feature_extraction.text import TfidfVectorizer
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
+
+_ROOT = Path(__file__).resolve().parents[1]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from local_model.dataset import load_dataset
 from local_model.model import MLPClassifier
